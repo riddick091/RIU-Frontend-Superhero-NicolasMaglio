@@ -7,29 +7,12 @@ import { AuthService } from './core/services/auth/auth';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  templateUrl: './app.html',
+  template: '<router-outlet></router-outlet>',
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('RIU-Frontend-Superhero-NicolasMaglio');
-  private toastService = inject(ToastService);
-  private authService = inject(AuthService);
-  private toast = inject(MatSnackBar);
-
-  constructor() {
-    effect(() => {
-      const message = this.toastService.toastMessage();
-      if (message) {
-        this.toast.open(message, 'Cerrar', { ...this.toastService.defaultPosition });
-      }
-    });
-    
-    if (!this.authService.checkUserAuthenticated()) {
-      this.authService.logout();
-    }
-    this.toastService.showToast('Bienvenido');
-  }
 }
+
 
 
 

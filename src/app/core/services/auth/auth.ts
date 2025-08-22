@@ -14,30 +14,54 @@ export class AuthService {
 
   private _isAuthenticated = signal<boolean>(false);
   private _currentUser = signal<User | null>(null);
+  private _isLoading = signal<boolean>(false);
 
   readonly isAuthenticated = this._isAuthenticated.asReadonly();
   readonly currentUser = this._currentUser.asReadonly();
+  readonly isLoading = this._isLoading.asReadonly();
 
   constructor(private router: Router) {
   }
 
-  login(email: string): void {
-    const user: User = { id: '1', email, name: 'Test User' };
+  login(email: string, password: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this._isLoading.set(true);
+      setTimeout(() => {
+        if (email === 'user@test.com' && password === 'user123') {
+          const user: User = {
+            id: '2',
+            email,
+            name: 'Usuario de test'
+          };
+          this.setAuthenticatedUser(user);
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }, 1000);
+    });
+  }
+
+  setAuthenticatedUser(user: User) {
     this._currentUser.set(user);
     this._isAuthenticated.set(true);
-    //this.router.navigate(['/dashboard']);
+
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('isAuthenticated', 'true');
   }
-  
+
   logout(): void {
     this._isAuthenticated.set(false);
     this._currentUser.set(null);
-  // his.router.navigate(['/login']);
+    localStorage.removeItem('user');
+    localStorage.removeItem('isAuthenticated');
+    this.router.navigate(['/login']);
   }
 
   checkUserAuthenticated(): boolean {
-    const isAuthenticated = false
-    const userData = null
-    
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    const userData = localStorage.getItem('user');
+
     try {
       if (isAuthenticated && userData) {
         this._isAuthenticated.set(true);
@@ -56,4 +80,8 @@ export class AuthService {
     }
   }
 
+
+  getIsLoading() {
+    return this._isLoading.asReadonly();
+  }
 }
