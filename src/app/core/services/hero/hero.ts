@@ -1,8 +1,93 @@
-import { Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { Hero } from '../../../models/hero.model';
+import { Power } from '../../../models/power.model';
+import { delay, Observable, of, throwError } from 'rxjs';
+import { AuthService } from '../auth/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HeroService {
-  
+  private authService = inject(AuthService);
+
+  private heros = signal<Hero[]>(
+    [
+      new Hero(1, 'Superman', [
+        new Power(1, 'Súper Fuerza', 'Fuerza sobrenatural'),
+        new Power(2, 'Vuelo', 'vuela'),
+        new Power(3, 'Visión de Rayos X', 'Ver a través de todo')
+      ], 'Sistema', 'https://example.com/superman.jpg'),
+
+      new Hero(2, 'Hombre Araña', [
+        new Power(9, 'Telarañas', 'Disparo de telarañas'),
+        new Power(10, 'Sentido Arácnido', 'anticipa peligro'),
+        new Power(11, 'Agilidad', 'Agilidad')
+      ], 'Sistema', 'https://example.com/spiderman.jpg'),
+    ]
+  )
+  readonly currentUser = this.authService.currentUser;
+  public readonly totalHeroes = computed(() => this.heros().length);
+
+  getNewId(): number {
+    const cHeros = this.heros()
+    return cHeros.length > 0 ? cHeros.length + 1 : 1;
+  }
+
+  getAllHeroes(): Observable<Hero[]> {
+    return of(this.heros()).pipe(delay(1000));
+  }
+
+  getHeroById(id: number): Observable<Hero | undefined> {
+    const heroById = this.heros().find(hero => hero.id === id)
+    return of(heroById || undefined).pipe(delay(500));
+  }
+
+
+  registerHero(heroData: Omit<Hero, 'id'>): Observable<Hero | null> {
+    const currentHeroes = this.heros();
+
+    const maxId = this.getNewId();
+    const newHero = new Hero(
+      maxId,
+      heroData.name,
+      heroData.powers,
+      this.currentUser?.name || 'testuser',
+    );
+
+    this.heros.set([...currentHeroes, newHero]);
+
+    return of(newHero).pipe(delay(500));
+  }
+
+
+  updateHero(hero: Hero): Observable<Hero> {
+
+    const currentHeroes = this.heros();
+    const idx = currentHeroes.findIndex(h => h.id === hero.id);
+
+    if (idx === -1) {
+      return throwError(() => new Error('El héroe no existe'));
+    }
+
+    const updatedHeroes = [...currentHeroes];
+    updatedHeroes[idx] = { ...hero };
+    this.heros.set(updatedHeroes);
+
+    return of(hero).pipe(delay(500));
+  }
+
+  deleteHero(id: number): Observable<boolean> {
+    const currentHeroes = this.heros();
+    const idx = currentHeroes.findIndex(h => h.id === id);
+
+    if (idx === -1) {
+      return throwError(() => new Error('El héroe no existe'));
+    }
+
+    const updatedHeroes = currentHeroes.filter(h => h.id !== id);
+    this.heros.set(updatedHeroes);
+
+    return of(true).pipe(delay(500));
+  }
+
 }
