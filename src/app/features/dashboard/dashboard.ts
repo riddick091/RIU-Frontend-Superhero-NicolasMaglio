@@ -5,10 +5,11 @@ import { AuthService } from '../../core/services/auth/auth';
 import { ToastService } from '../../core/services/toast/toast';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
+import { KpiCard } from '../../shared/components/kpi-card/kpi-card';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, MatCardModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatIconModule, KpiCard],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

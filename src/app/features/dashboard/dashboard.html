@@ -5,34 +5,9 @@
         perferendis corrupti?</p>
 
     <section class="kpi-cards">
-        <mat-card class="kpi-card">
-            <mat-card-header>
-                <mat-card-title>Total de Héroes</mat-card-title>
-                <mat-card-subtitle>Registrados en el sistema</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-                <p>3</p>
-            </mat-card-content>
-        </mat-card>
-        <mat-card class="kpi-card">
-            <mat-card-header>
-                <mat-card-title>Demo card</mat-card-title>
-                <mat-card-subtitle>Demo subtitle card</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-                <p>6</p>
-            </mat-card-content>
-        </mat-card>
-        <mat-card class="kpi-card">
-            <mat-card-header>
-                <mat-card-title>Demo card</mat-card-title>
-                <mat-card-subtitle>Demo subtitle card</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-                <p>10</p>
-            </mat-card-content>
-        </mat-card>
-
+        <app-kpi-card [title]="'Total de Héroes'" [subtitle]="'Registrados en el sistema'" [value]="3"></app-kpi-card>
+        <app-kpi-card [title]="'Total de Villanos'" [subtitle]="'Registrados en el sistema'" [value]="5"></app-kpi-card>
+        <app-kpi-card [title]="'Total de Usuarios'" [subtitle]="'Registrados en el sistema'" [value]="10"></app-kpi-card>
     </section>
 
 </article>
