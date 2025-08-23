@@ -1,0 +1,11 @@
+.kpi-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.kpi-cards>* {
+    flex: 1 1 auto;
+}

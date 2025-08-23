@@ -1,11 +1,14 @@
+import { MatIconModule } from '@angular/material/icon';
 import { Component, effect, inject } from '@angular/core';
-import { ToastService } from '../../core/services/toast/toast';
-import { AuthService } from '../../core/services/auth/auth';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../core/services/auth/auth';
+import { ToastService } from '../../core/services/toast/toast';
+import { MatCardModule } from '@angular/material/card';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [CommonModule, MatCardModule, MatIconModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

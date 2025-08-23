@@ -4,17 +4,31 @@ import { Dashboard } from './features/dashboard/dashboard';
 import {
     Login
 } from './features/auth/login/login';
+import { AuthLayout } from './layout/auth-layout/auth-layout';
+import { MainLayout } from './layout/main-layout/main-layout';
 
 export const routes: Routes = [
-
     {
-        path: 'dashboard', component: Dashboard, pathMatch: 'full', canActivate: [authGuard]
+        path: 'auth',
+        component: AuthLayout,
+        children: [
+            { path: 'login', component: Login },
+            { path: '', redirectTo: 'login', pathMatch: 'full' }
+        ]
     },
-    { path: 'login', component: Login },
     {
-        path: 'heros',
-        loadChildren: () => import('./features/heros/hero.routes').then(m => m.routes),
+        path: '',
+        component: MainLayout,
+        children: [
+            { path: 'dashboard', component: Dashboard },
+            {
+                path: 'heros',
+                loadChildren: () => import('./features/heros/hero.routes').then(m => m.routes),
+            },
+            { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+        ],
         canActivate: [authGuard]
     },
-    { path: '**', redirectTo: '/dashboard' }
+
+    { path: '**', redirectTo: '/auth/login' }
 ];
