@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { STORAGE_KEYS } from '../../constants/localStorageKeys';
 
 export interface User {
   id: string;
@@ -15,12 +16,20 @@ export class AuthService {
   private _isAuthenticated = signal<boolean>(false);
   private _currentUser = signal<User | null>(null);
   private _isLoading = signal<boolean>(false);
+  private _isWelcomeMessage = signal<boolean>(false);
 
   readonly isAuthenticated = this._isAuthenticated.asReadonly();
   readonly currentUser = this._currentUser.asReadonly();
   readonly isLoading = this._isLoading.asReadonly();
+  readonly isWelcomeMessage = this._isWelcomeMessage.asReadonly();
 
   constructor(private router: Router) {
+    this.initializeWelcome();
+  }
+
+  private initializeWelcome(): void {
+    const welcomeMesagge = sessionStorage.getItem(STORAGE_KEYS.WELCOME_KEY) === 'true';
+    this._isWelcomeMessage.set(welcomeMesagge);
   }
 
   login(email: string, password: string): Promise<boolean> {
@@ -33,7 +42,7 @@ export class AuthService {
             email,
             name: 'Usuario de test'
           };
-          this.setAuthenticatedUser(user);
+          this.setAuthenticatedUser(user, true);
           resolve(true);
         } else {
           resolve(false);
@@ -42,25 +51,32 @@ export class AuthService {
     });
   }
 
-  setAuthenticatedUser(user: User) {
+  setAuthenticatedUser(user: User, firstLogin: boolean = false) {
     this._currentUser.set(user);
     this._isAuthenticated.set(true);
 
-    localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('isAuthenticated', 'true');
+    if (firstLogin) {
+      this._isWelcomeMessage.set(true);
+      localStorage.setItem(STORAGE_KEYS.WELCOME_KEY, 'true');
+    }
+
+    localStorage.setItem(STORAGE_KEYS.USER_KEY, JSON.stringify(user));
+    localStorage.setItem(STORAGE_KEYS.AUTH_KEY, 'true');
+
   }
 
   logout(): void {
     this._isAuthenticated.set(false);
     this._currentUser.set(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem(STORAGE_KEYS.USER_KEY);
+    localStorage.removeItem(STORAGE_KEYS.AUTH_KEY);
+    sessionStorage.removeItem(STORAGE_KEYS.WELCOME_KEY);
     this.router.navigate(['/login']);
   }
 
   checkUserAuthenticated(): boolean {
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    const userData = localStorage.getItem('user');
+    const isAuthenticated = localStorage.getItem(STORAGE_KEYS.AUTH_KEY) === 'true';
+    const userData = localStorage.getItem(STORAGE_KEYS.USER_KEY);
 
     try {
       if (isAuthenticated && userData) {

@@ -6,6 +6,7 @@ import { ToastService } from '../../core/services/toast/toast';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 import { KpiCard } from '../../shared/components/kpi-card/kpi-card';
+import { HeroService } from '../../core/services/hero/hero';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +17,10 @@ import { KpiCard } from '../../shared/components/kpi-card/kpi-card';
 export class Dashboard {
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private heroService = inject(HeroService);
   private toast = inject(MatSnackBar);
+
+  totalHeroes = this.heroService.totalHeroes;
 
   constructor() {
     effect(() => {
@@ -30,8 +34,10 @@ export class Dashboard {
       this.authService.logout();
     }
 
-    const user = this.authService.currentUser();
-    this.toastService.showToast(`Bienvenido ${user?.name}`);
+    if (this.authService.isWelcomeMessage()) {
+      const user = this.authService.currentUser();
+      this.toastService.showToast(`Bienvenido ${user?.name}`);
+    }
 
   }
 }

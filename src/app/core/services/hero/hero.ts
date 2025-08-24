@@ -42,7 +42,6 @@ export class HeroService {
     return of(heroById || undefined).pipe(delay(500));
   }
 
-
   registerHero(heroData: Omit<Hero, 'id'>): Observable<Hero | null> {
     const currentHeroes = this.heros();
 
@@ -58,7 +57,6 @@ export class HeroService {
 
     return of(newHero).pipe(delay(500));
   }
-
 
   updateHero(hero: Hero): Observable<Hero> {
 
