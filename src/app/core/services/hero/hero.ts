@@ -3,11 +3,13 @@ import { Hero } from '../../../models/hero.model';
 import { Power } from '../../../models/power.model';
 import { delay, Observable, of, throwError } from 'rxjs';
 import { AuthService } from '../auth/auth';
+import { RequestService } from '../request/request';
 
 @Injectable({
   providedIn: 'root'
 })
-export class HeroService {
+export class HeroService extends RequestService {
+  private ENTITY = 'Héroe';
   private authService = inject(AuthService);
 
   private heros = signal<Hero[]>(
@@ -53,12 +55,12 @@ export class HeroService {
   }
 
   getAllHeroes(): Observable<Hero[]> {
-    return of(this.heros()).pipe(delay(1000));
+    return this.query(of(this.heros()).pipe(delay(1000)));
   }
 
   getHeroById(id: number): Observable<Hero | undefined> {
     const heroById = this.heros().find(hero => hero.id === id)
-    return of(heroById || undefined).pipe(delay(500));
+    return this.query(of(heroById || undefined).pipe(delay(500)));
   }
 
   registerHero(heroData: Omit<Hero, 'id'>): Observable<Hero | null> {
@@ -74,7 +76,7 @@ export class HeroService {
 
     this.heros.set([...currentHeroes, newHero]);
 
-    return of(newHero).pipe(delay(500));
+    return this.create(of(newHero).pipe(delay(500)), this.ENTITY);
   }
 
   updateHero(hero: Hero): Observable<Hero> {
@@ -90,7 +92,7 @@ export class HeroService {
     updatedHeroes[idx] = { ...hero };
     this.heros.set(updatedHeroes);
 
-    return of(hero).pipe(delay(500));
+    return this.update(of(hero).pipe(delay(500)), this.ENTITY);
   }
 
   deleteHero(id: number): Observable<boolean> {
@@ -104,7 +106,7 @@ export class HeroService {
     const updatedHeroes = currentHeroes.filter(h => h.id !== id);
     this.heros.set(updatedHeroes);
 
-    return of(true).pipe(delay(500));
+    return this.delete(of(true).pipe(delay(500)), this.ENTITY);
   }
 
 }

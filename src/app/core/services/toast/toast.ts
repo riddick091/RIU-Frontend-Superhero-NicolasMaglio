@@ -1,15 +1,17 @@
-import { Injectable, signal } from '@angular/core';
-import { MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { inject, Injectable, signal } from '@angular/core';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ToastService {
+  private snackBar = inject(MatSnackBar);
+
   horizontalPosition: MatSnackBarHorizontalPosition = 'right';
   verticalPosition: MatSnackBarVerticalPosition = 'top';
 
   defautlTimeout = 5000;
-  private  _defaultPosition = {
+  private _defaultPosition = {
     duration: this.defautlTimeout,
     horizontalPosition: this.horizontalPosition,
     verticalPosition: this.verticalPosition
@@ -23,10 +25,7 @@ export class ToastService {
       return;
     }
 
-    this._toastMessage.set(message);
-    setTimeout(() => {
-      this._toastMessage.set(null);
-    }, this.defautlTimeout);
+    this.snackBar.open(message, 'Cerrar', this._defaultPosition);
   }
 
   get defaultPosition() {

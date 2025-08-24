@@ -1,21 +1,21 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
-import { HeroService } from '../../../core/services/hero/hero';
-import { Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardActions, MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatSortModule } from '@angular/material/sort';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { Hero } from '../../../models/hero.model';
-import { HERO_ROUTES } from '../../../core/constants/routes';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardActions, MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
+import { HERO_ROUTES } from '../../../core/constants/routes';
+import { HeroService } from '../../../core/services/hero/hero';
+import { Hero } from '../../../models/hero.model';
 import { LoadingSpinner } from "../../../shared/components/loading-spinner/loading-spinner";
-
 @Component({
   selector: 'app-hero-list',
   imports: [CommonModule,
@@ -40,7 +40,7 @@ export class HeroList {
 
   private searchTerm = signal<string>('');
   private allHeroes = signal<Hero[]>([]);
-  private isLoading = signal<boolean>(false);
+  private isLoading = toSignal(this.heroService.loading$);
 
   private pageSize = signal<number>(5);
   private currentPage = signal<number>(0);
@@ -78,7 +78,6 @@ export class HeroList {
   }
 
   private async loadHeroes(): Promise<void> {
-    this.isLoading.set(true);
 
     try {
       const heroes = await firstValueFrom(this.heroService.getAllHeroes());
@@ -86,8 +85,6 @@ export class HeroList {
 
     } catch (error) {
       console.error('Error cargando héroes:', error);
-    } finally {
-      this.isLoading.set(false);
     }
   }
 

@@ -27,7 +27,8 @@
 
             @if (loading) {
             <app-loading-spinner [isLoading]="loading" [message]="loadingMessage" />
-            } @else {
+            }
+            @if (!loading ) {
             <table mat-table [dataSource]="dataHeroes" class="heroes-table">
 
                 <ng-container matColumnDef="Nro.">
