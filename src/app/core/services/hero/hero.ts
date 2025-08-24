@@ -23,6 +23,25 @@ export class HeroService {
         new Power(10, 'Sentido Arácnido', 'anticipa peligro'),
         new Power(11, 'Agilidad', 'Agilidad')
       ], 'Sistema', 'https://example.com/spiderman.jpg'),
+
+      new Hero(3, 'X-MEN', [
+        new Power(12, 'Súper Fuerza', 'Fuerza sobrenatural'),
+      ], 'Sistema', ''),
+      new Hero(4, 'Batman', [
+        new Power(16, 'Artes Marciales', 'Combate cuerpo a cuerpo'),
+      ], 'Sistema', ''),
+      new Hero(5, 'Robin', [
+        new Power(18, 'Artes Marciales', 'Combate cuerpo a cuerpo'),
+      ], 'Sistema', ''),
+      new Hero(6, 'SuperPerro', [
+        new Power(55, 'Súper Mordida', 'Fuerza Perruna'),
+      ], 'Sistema', ''),
+      new Hero(7, 'Hombre Agil', [
+        new Power(11, 'Agilidad', 'Agilidad')
+      ], 'Sistema', ''),
+      new Hero(8, 'Mujer maravilla', [
+        new Power(2, 'Vuelo', 'vuela'),
+      ], 'Sistema', ''),
     ]
   )
   readonly currentUser = this.authService.currentUser;

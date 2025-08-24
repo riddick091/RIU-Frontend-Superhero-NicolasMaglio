@@ -1,0 +1,23 @@
+.hero-list-container {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 24px;
+}
+
+.header-card {
+    padding: 24px;
+}
+
+.table-card {
+    padding: 24px;
+}
+
+table {
+    width: 100%;
+}
+
+.mat-mdc-form-field {
+    font-size: 14px;
+    width: 100%;
+}

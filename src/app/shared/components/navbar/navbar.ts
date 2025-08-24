@@ -5,6 +5,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth';
+import { MENU_ROUTES } from '../../../core/constants/routes';
 
 @Component({
   selector: 'app-navbar',
@@ -15,11 +16,11 @@ import { AuthService } from '../../../core/services/auth/auth';
     <mat-toolbar>
       <span>Super Heroes</span>
       <nav>
-          <button mat-button routerLink="/dashboard" routerLinkActive="active">
+          <button mat-button (click)="navigateToDashboard()">
               <mat-icon>home</mat-icon>
               Home
           </button>
-          <button mat-button routerLink="/heros" routerLinkActive="active">
+          <button mat-button (click)="navigateToHeroes()" >
               <mat-icon>people</mat-icon>
               Heroes
           </button>
@@ -56,8 +57,16 @@ export class Navbar {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  navigateToDashboard() {
+    this.router.navigate([MENU_ROUTES.DASHBOARD]);
+  }
+
+  navigateToHeroes() {
+    this.router.navigate([MENU_ROUTES.HEROES]);
+  }
+
   logout() {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate([MENU_ROUTES.LOGIN]);
   }
 }
