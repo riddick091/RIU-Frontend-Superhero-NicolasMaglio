@@ -1,0 +1,30 @@
+<div class="image-upload-container">
+    <div class="image-preview" [class.has-image]="currentImageUrl">
+        @if (currentImageUrl) {
+        <img [src]="currentImageUrl" [alt]="'Hero image'" />
+        <div class="image-overlay">
+            <button mat-icon-button color="warn" (click)="removeImage()">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+        } @else {
+        <div class="placeholder">
+            <mat-icon>image</mat-icon>
+            <span>Imagen</span>
+        </div>
+        }
+
+        @if (isUploading) {
+        <div class="upload-spinner">
+            <app-loading-spinner />
+        </div>
+        }
+    </div>
+
+    <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+
+    <button mat-raised-button color="primary" (click)="fileInput.click()" [disabled]="isUploading">
+        <mat-icon>{{ currentImageUrl ? 'edit' : 'add_a_photo' }}</mat-icon>
+        {{ currentImageUrl ? 'Cambiar Imagen' : 'Subir Imagen' }}
+    </button>
+</div>

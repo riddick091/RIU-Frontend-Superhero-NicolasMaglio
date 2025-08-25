@@ -8,6 +8,10 @@ export const routes: Routes = [
                 path: '',
                 loadComponent: () => import('./hero-list/hero-list').then(m => m.HeroList)
             },
+            {
+                path: 'new',
+                loadComponent: () => import('./hero-form/hero-form').then(m => m.HeroForm)
+            },
         ],
     }
 ];

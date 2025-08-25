@@ -1,0 +1,48 @@
+.hero-form-container {
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+.form-card mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+}
+
+.hero-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px 0;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+
+.powers-table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.power-description {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.power-id {
+  font-size: 10px;
+  color: #999;
+}
+
+.add-power-form {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
