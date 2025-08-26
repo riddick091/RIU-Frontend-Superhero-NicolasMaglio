@@ -16,6 +16,8 @@ import { Power } from '../../../models/power.model';
 import { MatTableModule } from '@angular/material/table';
 import { ImageUpload } from "../../../shared/components/image-upload/image-upload";
 import { firstValueFrom } from 'rxjs';
+import { UppercaseDirective } from '../../../shared/directives/uppercase';
+import { LoadingSpinner } from "../../../shared/components/loading-spinner/loading-spinner";
 
 @Component({
   selector: 'app-hero-form',
@@ -27,7 +29,7 @@ import { firstValueFrom } from 'rxjs';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatTableModule, ImageUpload],
+    MatTableModule, ImageUpload, UppercaseDirective, LoadingSpinner],
   templateUrl: './hero-form.html',
   styleUrl: './hero-form.css'
 })
@@ -44,6 +46,10 @@ export class HeroForm {
 
   private heroId = signal<number | null>(null);
 
+  private isLoadingHero = signal<boolean>(false);
+  private isSavingHero = signal<boolean>(false);
+
+  isLoading = computed(() => this.isLoadingHero() || this.isSavingHero());
   isEditMode = computed(() => this.heroId() !== null);
   title = computed(() => this.isEditMode() ? 'Editar héroe' : 'Crear héroe');
   buttonText = computed(() => this.isEditMode() ? 'Actualizar' : 'Guardar');
@@ -104,15 +110,23 @@ export class HeroForm {
       return
     }
 
-    const hero = await firstValueFrom(this.heroService.getHeroById(id));
+    try {
+      this.isLoadingHero.set(true);
+      const hero = await firstValueFrom(this.heroService.getHeroById(id));
 
-    if (!hero) {
-      this.router.navigate([MENU_ROUTES.HEROES]);
-      return
+      if (!hero) {
+        this.router.navigate([MENU_ROUTES.HEROES]);
+        return
+      }
+
+      this.currentHero.set(hero);
+      this.loadHero(hero);
+    } catch (error) {
+      console.error('Error cargando héroe:', error);
+    } finally {
+      this.isLoadingHero.set(false);
     }
 
-    this.currentHero.set(hero);
-    this.loadHero(hero);
   }
 
   private loadHero(hero: Hero): void {
@@ -148,6 +162,8 @@ export class HeroForm {
       this.heroForm.markAllAsTouched();
       return;
     }
+    
+    this.isSavingHero.set(true);
 
     const formValue = this.heroForm.getRawValue();
     const heroData: Partial<Hero> = {
@@ -155,7 +171,7 @@ export class HeroForm {
       powers: formValue.powers,
       imageUrl: formValue.imageUrl
     }
-    
+
     try {
       if (this.isEditMode()) {
         const currentHero = this.currentHero();
@@ -174,6 +190,7 @@ export class HeroForm {
     } catch (error) {
       this.toastService.showToast('Error inesperado al guardar el héroe');
     } finally {
+      this.isSavingHero.set(false);
       this.router.navigate([MENU_ROUTES.HEROES]);
     }
   }

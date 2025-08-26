@@ -8,6 +8,14 @@
         </mat-card-header>
 
         <mat-card-content class="hero-form-content">
+
+            @if (isLoading()) {
+            <div class="loading-container">
+                <app-loading-spinner>
+                </app-loading-spinner>
+            </div>
+            } @else {
+
             <form [formGroup]="heroForm" class="hero-form">
 
                 <div class="form-section">
@@ -21,7 +29,7 @@
 
                     <mat-form-field appearance="outline" class="full-width">
                         <mat-label>Nombre</mat-label>
-                        <input matInput formControlName="name" placeholder="">
+                        <input matInput formControlName="name" appUppercase placeholder="">
                         <mat-icon matPrefix>person</mat-icon>
 
                         @if (getHasError('name')) {
@@ -111,6 +119,10 @@
                     {{ buttonText() }}
                 </button>
             </mat-card-actions>
+
+
+            }
+
 
         </mat-card-content>
     </mat-card>

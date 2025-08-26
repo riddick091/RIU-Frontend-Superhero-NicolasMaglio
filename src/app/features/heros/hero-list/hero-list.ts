@@ -15,7 +15,9 @@ import { debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
 import { HERO_ROUTES } from '../../../core/constants/routes';
 import { HeroService } from '../../../core/services/hero/hero';
 import { Hero } from '../../../models/hero.model';
+import { MatDialog } from '@angular/material/dialog';
 import { LoadingSpinner } from "../../../shared/components/loading-spinner/loading-spinner";
+import { Dialog } from '../../../shared/components/dialog/dialog';
 @Component({
   selector: 'app-hero-list',
   imports: [CommonModule,
@@ -38,6 +40,7 @@ export class HeroList {
   private router = inject(Router);
   private fb = inject(FormBuilder);
 
+  private dialog = inject(MatDialog);
   private searchTerm = signal<string>('');
   private allHeroes = signal<Hero[]>([]);
   private isLoading = toSignal(this.heroService.loading$);
@@ -130,8 +133,18 @@ export class HeroList {
   }
 
   deleteHero(heroId: number): void {
-    this.heroService.deleteHero(heroId).subscribe(() => {
-      this.loadHeroes();
+    const dialogRef = this.dialog.open(Dialog, {
+      data: {
+        message: '¿Está seguro que desea borrar este héroe? Esta acción no se puede deshacer.'
+      },
+      width: '400px'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.heroService.deleteHero(heroId).subscribe(() => {
+          this.loadHeroes();
+        });
+      }
     });
   }
 
