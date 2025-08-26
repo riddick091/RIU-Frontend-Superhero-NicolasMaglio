@@ -125,6 +125,10 @@ export class HeroList {
     this.router.navigate([HERO_ROUTES.NEW_HERO]);
   }
 
+  editHero(heroId: number): void {
+    this.router.navigate([HERO_ROUTES.EDIT_HERO.replace(':id', heroId.toString())]);
+  }
+
   deleteHero(heroId: number): void {
     this.heroService.deleteHero(heroId).subscribe(() => {
       this.loadHeroes();

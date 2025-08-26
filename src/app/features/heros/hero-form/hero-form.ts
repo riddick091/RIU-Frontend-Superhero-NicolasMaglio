@@ -1,7 +1,7 @@
 import { ToastService } from './../../../core/services/toast/toast';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, effect } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, ROUTES } from '@angular/router';
+import { ActivatedRoute, Router, ROUTES } from '@angular/router';
 import { HeroService } from '../../../core/services/hero/hero';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -15,6 +15,7 @@ import { Hero } from '../../../models/hero.model';
 import { Power } from '../../../models/power.model';
 import { MatTableModule } from '@angular/material/table';
 import { ImageUpload } from "../../../shared/components/image-upload/image-upload";
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-hero-form',
@@ -35,6 +36,8 @@ export class HeroForm {
   private heroService = inject(HeroService);
   private toastService = inject(ToastService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private currentHero = signal<Hero | null>(null);
 
   private selectedImage = signal<string | null>(null);
   imageUploading = signal<boolean>(false);
@@ -51,9 +54,21 @@ export class HeroForm {
   displayedColumns: string[] = ['powerName', 'powerDescription', 'powerActions'];
 
   private _powersTableData = signal<any[]>([]);
-  powersTableData = this._powersTableData.asReadonly();
+  powersTableData = this._powersTableData.asReadonly()
 
   loading = toSignal(this.heroService.loading$);
+
+  constructor() {
+    effect(() => {
+      this.heroForm.reset();
+
+      const id = this.route.snapshot.paramMap.get('id')
+      if (id && id !== 'new') {
+        this.heroId.set(parseInt(id, 10))
+        this.loadHeroEdit()
+      }
+    })
+  }
 
   private customNameValidator = (control: any) => {
     const value = control.value;
@@ -81,26 +96,86 @@ export class HeroForm {
     imageUrl: [''],
   });
 
+  private async loadHeroEdit(): Promise<void> {
+
+    const id = this.heroId();
+    if (!id) {
+      this.router.navigate([MENU_ROUTES.HEROES]);
+      return
+    }
+
+    const hero = await firstValueFrom(this.heroService.getHeroById(id));
+
+    if (!hero) {
+      this.router.navigate([MENU_ROUTES.HEROES]);
+      return
+    }
+
+    this.currentHero.set(hero);
+    this.loadHero(hero);
+  }
+
+  private loadHero(hero: Hero): void {
+    this.heroForm.patchValue({
+      name: hero.name,
+      imageUrl: hero.imageUrl || ''
+    });
+
+    if (hero.imageUrl) {
+      this.selectedImage.set(hero.imageUrl)
+    }
+
+    const powersArray = this.heroForm.get('powers') as FormArray;
+
+    powersArray.clear()
+
+    hero.powers.forEach(power => {
+      powersArray.push(this.fb.control(power));
+    });
+
+    this._powersTableData.set(
+      powersArray.controls.map((control, index) => ({
+        ...control.value,
+        index
+      }))
+    );
+
+  }
+
   async onSubmit(): Promise<void> {
 
     if (this.heroForm.invalid) {
       this.heroForm.markAllAsTouched();
       return;
     }
+
     const formValue = this.heroForm.getRawValue();
     const heroData: Partial<Hero> = {
       name: formValue.name,
       powers: formValue.powers,
-    };
+      imageUrl: formValue.imageUrl
+    }
+    
+    try {
+      if (this.isEditMode()) {
+        const currentHero = this.currentHero();
 
-    this.heroService.registerHero(heroData as Omit<Hero, 'id'>).subscribe({
-      next: () => {
-        this.router.navigate([MENU_ROUTES.HEROES]);
-      },
-      error: (error) => {
-        this.toastService.showToast(this.getErrorMessage(error));
+        const updatedHero = {
+          ...currentHero,
+          name: heroData.name,
+          powers: heroData.powers,
+          imageUrl: heroData.imageUrl
+        } as Hero;
+
+        await firstValueFrom(this.heroService.updateHero(updatedHero));
+      } else {
+        await firstValueFrom(this.heroService.registerHero(heroData as Omit<Hero, 'id'>));
       }
-    });
+    } catch (error) {
+      this.toastService.showToast('Error inesperado al guardar el héroe');
+    } finally {
+      this.router.navigate([MENU_ROUTES.HEROES]);
+    }
   }
 
   getHasError(name: string): boolean {
@@ -189,6 +264,8 @@ export class HeroForm {
     );
   }
 
-
+  get currentImageUrl() {
+    return this.selectedImage();
+  }
 
 }

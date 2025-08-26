@@ -71,7 +71,8 @@ export class HeroService extends RequestService {
       maxId,
       heroData.name,
       heroData.powers,
-      this.currentUser?.name || 'testuser',
+      this.currentUser()?.name || 'testuser',
+      heroData.imageUrl,
     );
 
     this.heros.set([...currentHeroes, newHero]);

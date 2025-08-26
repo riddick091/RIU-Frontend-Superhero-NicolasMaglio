@@ -14,9 +14,8 @@
                     <h4>Datos</h4>
 
                     <div class="image-section">
-                        <app-image-upload [isUploading]="imageUploading()"
-                            (imageSelected)="onImageSelected($event)" 
-                            (uploadingChange)="onImageUploading($event)">
+                        <app-image-upload [currentImageUrl]="currentImageUrl" [isUploading]="imageUploading()"
+                            (imageSelected)="onImageSelected($event)" (uploadingChange)="onImageUploading($event)">>
                         </app-image-upload>
                     </div>
 

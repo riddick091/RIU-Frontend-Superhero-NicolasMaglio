@@ -7,13 +7,8 @@
                 <mat-icon>delete</mat-icon>
             </button>
         </div>
-        } @else {
-        <div class="placeholder">
-            <mat-icon>image</mat-icon>
-            <span>Imagen</span>
-        </div>
         }
-
+        
         @if (isUploading) {
         <div class="upload-spinner">
             <app-loading-spinner />
